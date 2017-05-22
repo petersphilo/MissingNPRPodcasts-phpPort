@@ -24,7 +24,7 @@ else {
 	$FullAppURL=$protocol.'://'.$YourPageURL.'p/'; 
 	}
 
-$FullPageURL=$protocol.'://'.$PageURL; 
+$FullPageURL=$protocol.'://'.$YourPageURL; 
 //$FullAppURL=$protocol.$AppURL; 
 	
 //echo '<br>The App domain: '.rtrim($PageURL,'/').'<br>'; 
