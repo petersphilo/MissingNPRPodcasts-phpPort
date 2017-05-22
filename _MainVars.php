@@ -1,8 +1,8 @@
 <?php
 
-$YourPageURL='xxxxxx'; // example: my.domain.tld/my/dir/  don't forget the trailing slash! -- missingnpr.zconsulting.net/
-$YourProtocol='xxxxxx'; // https or http -- https
-$YourUA='UA-xxxxxxxx-x'; // Google Analytics ID -- UA-24869005-2
+$YourPageURL='xxxxxx'; // example: my.domain.tld/my/dir/  don't forget the trailing slash!
+$YourProtocol='xxxxxx'; // https or http
+$YourUA='UA-xxxxxxxx-x'; // Google Analytics ID
 
 
 if(isset($_SERVER['HTTPS'])){$protocol='https://'; }else{$protocol='http://'; }
