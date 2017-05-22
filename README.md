@@ -117,7 +117,7 @@ The original source code contained in this project is released under the MIT Lic
 
 The [php](http://php.net) code contained in this project is released under the MIT License:
 
-    Copyright (C) 2012 Peter Zieseniss
+    Copyright (C) 2017 Peter Zieseniss
     
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to
