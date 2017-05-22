@@ -20,7 +20,6 @@ if($YourPageURL=='xxxxxx'){
 	$FullAppURL=$protocol.'://'.$MainURL; 
 	}
 else {
-	//$PageURL=$YourPageURL; 
 	$FullAppURL=$protocol.'://'.$YourPageURL.'p/'; 
 	}
 
