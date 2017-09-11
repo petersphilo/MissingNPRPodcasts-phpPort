@@ -4,14 +4,22 @@ include_once('../_MainVars.php');
 $nprProgramRefs['weekendsaturday']=7; $nprProgramRefs['weekendsunday']=10; $nprProgramRefs['morningedition']=3; $nprProgramRefs['allthingsconsidered']=2; 
 $nprProgramRefs['wesat']=7; $nprProgramRefs['wesun']=10; $nprProgramRefs['me']=3; $nprProgramRefs['atc']=2; $nprProgramRefs['sat']=7; $nprProgramRefs['sun']=10; // alternate options, not really used...
 $nprProgramRefs['7']=7; $nprProgramRefs['10']=10; $nprProgramRefs['3']=3; $nprProgramRefs['2']=2; // alternate options, not really used...
+$nprProgTitle['7']='NPR Programs: Weekend Edition Saturday : NPR'; 
+	$nprProgTitle['10']='NPR Programs: Weekend Edition Sunday : NPR'; 
+	$nprProgTitle['3']='NPR Programs: Morning Edition : NPR'; 
+	$nprProgTitle['2']='NPR Programs: All Things Considered : NPR'; // Should not be needed!!!
 
 $MainVar['program_id']=2; 
 $MainVar['MissingNPRRootURL']=$FullAppURL; 
 $MainVar['NPRQueryURL'] = 'https://api.npr.org/query?'; // On Mac, must use http because of OpenSSL+curl problem!!
 
 if (($_GET['TestAPIKey']=='TestAPIKey')&&($_GET['api_key']!='')){$MainVar['api_key']=$_GET['api_key']; test_api_key($MainVar); }
-if (($_GET['api_key']!='')&&($_GET['prog']!='')){$MainVar['api_key']=$_GET['api_key']; $MainVar['program_id']=$nprProgramRefs[$_GET['prog']]; build_rss($MainVar); }
- 
+if (($_GET['api_key']!='')&&($_GET['prog']!='')){$MainVar['api_key']=$_GET['api_key']; 
+	$MainVar['program_id']=$nprProgramRefs[$_GET['prog']]; 
+	$MainVar['programTitle']=$nprProgTitle[$MainVar['program_id']]; //see below...
+	build_rss($MainVar); 
+	}
+
 //class Podcast {
 	function GetAsXML($MainVar){
 		$request_url=$MainVar['NPRQueryURL'].$MainVar['urlArgs']; 
@@ -43,19 +51,19 @@ if (($_GET['api_key']!='')&&($_GET['prog']!='')){$MainVar['api_key']=$_GET['api_
 		$xml=new SimpleXMLElement('<?xml version="1.0" encoding="utf-8" ?><rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd"></rss>');
 		$channelMain=$xml->addChild('channel');
 		//populate_rss_channel(); // was its own function...
-			$channelVars['title']=$GetAsXMLResp->channel->title; 
+			/* $channelVars['title']=$GetAsXMLResp->channel->title;  */$channelVars['title']=$MainVar['programTitle']; 
 			$channelVars['link']=$GetAsXMLResp->channel->link; 
 			$channelVars['description']=$GetAsXMLResp->channel->description; 
 			$channelVars['language']=$GetAsXMLResp->channel->language; 
 			$channelVars['copyright']=$GetAsXMLResp->channel->copyright; 
-			$channelMain->addChild('title',$channelVars['title']); 
-			$channelMain->addChild('link',$channelVars['link']); 
-			$channelMain->addChild('description',$channelVars['description']); 
-			$channelMain->addChild('language',$channelVars['language']); 
-			$channelMain->addChild('copyright',$channelVars['copyright']); 
+			$channelMain->addChild('title',htmlspecialchars($channelVars['title'])); 
+			$channelMain->addChild('link',htmlspecialchars($channelVars['link'])); 
+			$channelMain->addChild('description',htmlspecialchars($channelVars['description'])); 
+			$channelMain->addChild('language',htmlspecialchars($channelVars['language'])); 
+			$channelMain->addChild('copyright',htmlspecialchars($channelVars['copyright'])); 
 			$channelMain->addChild('itunesZXZXauthor',''); 
 			$channelMain->addChild('itunesZXZXsubtitle',''); 
-			$channelMain->addChild('itunesZXZXsummary',$channelVars['description']); 
+			$channelMain->addChild('itunesZXZXsummary',($channelVars['description'])); 
 			$iTunesImage=$channelMain->addChild('itunesZXZXimage'); 
 			$iTunesImageAtr=$MainVar['MissingNPRRootURL'].$MainVar['program_id'].'-new.png'; 
 			$iTunesImage->addAttribute('href',$iTunesImageAtr); 
@@ -78,20 +86,20 @@ if (($_GET['api_key']!='')&&($_GET['prog']!='')){$MainVar['api_key']=$_GET['api_
 						$itemNode['itunesZXZXauthor']=$item->nprml_byline->nprml_name; 
 						//$itemNode['yyyyyy']=$item->nprml_yyyyyy; 
 						$Channelitem=$channelMain->addChild('item'); 
-						$Channelitem->addChild('title',$itemNode['title']); 
-						$Channelitem->addChild('description',$itemNode['description']); 
+						$Channelitem->addChild('title',htmlspecialchars($itemNode['title'])); 
+						$Channelitem->addChild('description',htmlspecialchars($itemNode['description'])); 
 						$Channelitem->addChild('link',htmlspecialchars($itemNode['link'])); 
 						$Channelitem->addChild('guid',htmlspecialchars($itemNode['guid'])); 
-						$Channelitem->addChild('itunesZXZXsubtitle',$itemNode['itunesZXZXsubtitle']); 
-						$Channelitem->addChild('itunesZXZXsummary',$itemNode['itunesZXZXsummary']); 
-						$Channelitem->addChild('itunesZXZXexplicit',$itemNode['itunesZXZXexplicit']); 
+						$Channelitem->addChild('itunesZXZXsubtitle',htmlspecialchars($itemNode['itunesZXZXsubtitle'])); 
+						$Channelitem->addChild('itunesZXZXsummary',htmlspecialchars($itemNode['itunesZXZXsummary'])); 
+						$Channelitem->addChild('itunesZXZXexplicit',htmlspecialchars($itemNode['itunesZXZXexplicit'])); 
 						$ChannelitemEnclos=$Channelitem->addChild('enclosure'); 
 						$ChannelitemEnclos->addAttribute('url',$item_AudioURL); 
 						$ChannelitemEnclos->addAttribute('type','audio/mpeg'); 
-						$Channelitem->addChild('itunesZXZXduration',$itemNode['itunesZXZXduration']); 
+						$Channelitem->addChild('itunesZXZXduration',htmlspecialchars($itemNode['itunesZXZXduration'])); 
 						$Channelitem->addChild('pubDate',$itemNode['pubDate']); 
-						$Channelitem->addChild('lastModifiedDate',$itemNode['lastModifiedDate']); 
-						$Channelitem->addChild('itunesZXZXauthor',$itemNode['itunesZXZXauthor']); 
+						$Channelitem->addChild('lastModifiedDate',htmlspecialchars($itemNode['lastModifiedDate'])); 
+						$Channelitem->addChild('itunesZXZXauthor',htmlspecialchars($itemNode['itunesZXZXauthor'])); 
 						//$Channelitem->addChild('xxxxxx',$itemNode['xxxxxx']); 
 						}
 			
@@ -99,7 +107,7 @@ if (($_GET['api_key']!='')&&($_GET['prog']!='')){$MainVar['api_key']=$_GET['api_
 		$xmlClean = new DOMDocument(); // seems like a huge memory cost (4184 bytes), just to make it 'pretty'; used DOMDoc: http://php.net/manual/en/class.domdocument.php
 		$xmlClean->loadXML($xml->asXML()); 
 		$xmlClean->formatOutput = true; 
-		echo str_replace('itunesZXZX','itunes:',$xmlClean->saveXML())/* .PHP_EOL.memory_get_usage().PHP_EOL */;
+		echo str_replace('itunesZXZX','itunes:',$xmlClean->saveXML())/* .PHP_EOL.memory_get_usage().PHP_EOL *//* .PHP_EOL.$MainVar['programTitle'].PHP_EOL */;
 		/*  end DOMDoc; it's really useless, just vanity formatting... to disable, comment 4 lines above, and un-comment 1 line below:  */
 		//echo str_replace('itunesZXZX','itunes:',$xml->asXML())/* .PHP_EOL.memory_get_usage().PHP_EOL */;
 		}
