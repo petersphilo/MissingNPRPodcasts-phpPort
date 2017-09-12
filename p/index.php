@@ -56,14 +56,14 @@ if (($_GET['api_key']!='')&&($_GET['prog']!='')){$MainVar['api_key']=$_GET['api_
 			$channelVars['description']=$GetAsXMLResp->channel->description; 
 			$channelVars['language']=$GetAsXMLResp->channel->language; 
 			$channelVars['copyright']=$GetAsXMLResp->channel->copyright; 
-			$channelMain->addChild('title',htmlspecialchars($channelVars['title'])); 
-			$channelMain->addChild('link',htmlspecialchars($channelVars['link'])); 
-			$channelMain->addChild('description',htmlspecialchars($channelVars['description'])); 
-			$channelMain->addChild('language',htmlspecialchars($channelVars['language'])); 
-			$channelMain->addChild('copyright',htmlspecialchars($channelVars['copyright'])); 
+			$channelMain->addChild('title'); $channelMain->title=$channelVars['title']; 
+			$channelMain->addChild('link'); $channelMain->link=$channelVars['link']; 
+			$channelMain->addChild('description'); $channelMain->description=$channelVars['description']; 
+			$channelMain->addChild('language'); $channelMain->language=$channelVars['language']; 
+			$channelMain->addChild('copyright'); $channelMain->copyright=$channelVars['copyright']; 
 			$channelMain->addChild('itunesZXZXauthor',''); 
 			$channelMain->addChild('itunesZXZXsubtitle',''); 
-			$channelMain->addChild('itunesZXZXsummary',($channelVars['description'])); 
+			$channelMain->addChild('itunesZXZXsummary'); $channelMain->itunesZXZXsummary=$channelVars['description']; 
 			$iTunesImage=$channelMain->addChild('itunesZXZXimage'); 
 			$iTunesImageAtr=$MainVar['MissingNPRRootURL'].$MainVar['program_id'].'-new.png'; 
 			$iTunesImage->addAttribute('href',$iTunesImageAtr); 
@@ -86,30 +86,30 @@ if (($_GET['api_key']!='')&&($_GET['prog']!='')){$MainVar['api_key']=$_GET['api_
 						$itemNode['itunesZXZXauthor']=$item->nprml_byline->nprml_name; 
 						//$itemNode['yyyyyy']=$item->nprml_yyyyyy; 
 						$Channelitem=$channelMain->addChild('item'); 
-						$Channelitem->addChild('title',htmlspecialchars($itemNode['title'])); 
-						$Channelitem->addChild('description',htmlspecialchars($itemNode['description'])); 
-						$Channelitem->addChild('link',htmlspecialchars($itemNode['link'])); 
-						$Channelitem->addChild('guid',htmlspecialchars($itemNode['guid'])); 
-						$Channelitem->addChild('itunesZXZXsubtitle',htmlspecialchars($itemNode['itunesZXZXsubtitle'])); 
-						$Channelitem->addChild('itunesZXZXsummary',htmlspecialchars($itemNode['itunesZXZXsummary'])); 
-						$Channelitem->addChild('itunesZXZXexplicit',htmlspecialchars($itemNode['itunesZXZXexplicit'])); 
+						$Channelitem->addChild('title'); $Channelitem->title=$itemNode['title']; 
+						$Channelitem->addChild('description'); $Channelitem->description=$itemNode['description']; 
+						$Channelitem->addChild('link'); $Channelitem->link=$itemNode['link']; 
+						$Channelitem->addChild('guid'); $Channelitem->guid=$itemNode['guid']; 
+						$Channelitem->addChild('itunesZXZXsubtitle'); $Channelitem->itunesZXZXsubtitle=$itemNode['itunesZXZXsubtitle']; 
+						$Channelitem->addChild('itunesZXZXsummary'); $Channelitem->itunesZXZXsummary=$itemNode['itunesZXZXsummary']; 
+						$Channelitem->addChild('itunesZXZXexplicit'); $Channelitem->itunesZXZXexplicit=$itemNode['itunesZXZXexplicit']; 
 						$ChannelitemEnclos=$Channelitem->addChild('enclosure'); 
 						$ChannelitemEnclos->addAttribute('url',$item_AudioURL); 
 						$ChannelitemEnclos->addAttribute('type','audio/mpeg'); 
-						$Channelitem->addChild('itunesZXZXduration',htmlspecialchars($itemNode['itunesZXZXduration'])); 
+						$Channelitem->addChild('itunesZXZXduration'); $Channelitem->itunesZXZXduration=$itemNode['itunesZXZXduration']; 
 						$Channelitem->addChild('pubDate',$itemNode['pubDate']); 
-						$Channelitem->addChild('lastModifiedDate',htmlspecialchars($itemNode['lastModifiedDate'])); 
-						$Channelitem->addChild('itunesZXZXauthor',htmlspecialchars($itemNode['itunesZXZXauthor'])); 
-						//$Channelitem->addChild('xxxxxx',$itemNode['xxxxxx']); 
+						$Channelitem->addChild('lastModifiedDate'); $Channelitem->lastModifiedDate=$itemNode['lastModifiedDate']; 
+						$Channelitem->addChild('itunesZXZXauthor'); $Channelitem->itunesZXZXauthor=$itemNode['itunesZXZXauthor']; 
 						}
 			
 					}
 		$xmlClean = new DOMDocument(); // seems like a huge memory cost (4184 bytes), just to make it 'pretty'; used DOMDoc: http://php.net/manual/en/class.domdocument.php
 		$xmlClean->loadXML($xml->asXML()); 
 		$xmlClean->formatOutput = true; 
-		echo str_replace('itunesZXZX','itunes:',$xmlClean->saveXML())/* .PHP_EOL.memory_get_usage().PHP_EOL *//* .PHP_EOL.$MainVar['programTitle'].PHP_EOL */;
+		echo str_replace('itunesZXZX','itunes:',$xmlClean->saveXML())/* .'Mem: '.PHP_EOL.memory_get_usage().PHP_EOL *//* .PHP_EOL.$MainVar['programTitle'].PHP_EOL */;
 		/*  end DOMDoc; it's really useless, just vanity formatting... to disable, comment 4 lines above, and un-comment 1 line below:  */
 		//echo str_replace('itunesZXZX','itunes:',$xml->asXML())/* .PHP_EOL.memory_get_usage().PHP_EOL */;
+		//sleep(1); $exec_time = microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]; echo PHP_EOL."Process Time: $exec_time".PHP_EOL;
 		}
 //	}
 
