@@ -41,7 +41,7 @@ if(isset($_GET['api_key'])){
 		}
 	
 	function test_api_key($MainVar){
-		$MainVar['urlArgs']='id=2&fields=all&dataType=story&output=RSS&numResults=1&apiKey='.$MainVar['api_key']; 
+		$MainVar['urlArgs']='parent=2&fields=all&dataType=story&output=RSS&numResults=1&apiKey='.$MainVar['api_key']; 
 		$GetAsXMLResp=GetAsXML($MainVar); 
 		$tmpResponse=$GetAsXMLResp->list->title;
 		if($tmpResponse=='NPR: Stories from NPR : NPR'){
@@ -56,7 +56,7 @@ if(isset($_GET['api_key'])){
 		//$MainVar['urlArgs']='id='.$MainVar['program_id'].'&fields=title,link,language,show,copyright,description,teaser,audio,product,summary,titles,teasers,dates,byline&dataType=story&output=RSS&numResults=30&apiKey='.$MainVar['api_key']; 
 		//$MainVar['urlArgs']='id='.$MainVar['program_id'].'&fields=title,link,language,show,copyright,description,teaser,audio,product,summary,titles,teasers,dates,byline&dataType=story&output=RSS&numResults=36&apiKey='.$MainVar['api_key']; 
 		//$MainVar['urlArgs']='id='.$MainVar['program_id'].'&fields=show,audio,titles,teasers,dates,byline&dataType=story&output=XML&numResults=36&apiKey='.$MainVar['api_key']; 
-		$MainVar['urlArgs']='id='.$MainVar['program_id'].'&fields=show,audio,titles,teasers,dates,byline&dataType=story&output=XML&numResults=36&apiKey='.$MainVar['api_key']; 
+		$MainVar['urlArgs']='parent='.$MainVar['program_id'].'&fields=show,audio,titles,teasers,dates,byline&dataType=story&output=XML&numResults=50&apiKey='.$MainVar['api_key']; 
 		//echo 'got here'; 
 		$GetAsXMLResp=GetAsXML($MainVar); 
 		//echo "got here".$response;
@@ -77,31 +77,33 @@ if(isset($_GET['api_key'])){
 			$iTunesOwner->addChild('itunesZXZXname','NPR: National Public Radio'); 
 			//populate_rss_story(); // was its own function...
 				foreach ($GetAsXMLResp->list->story as $item){
-					if($MainVar['program_id']==3){$item_AudioURL_Pre=preg_replace('/(.*)\?.*/','$1',$item->audio->format->mp3); }else{$item_AudioURL_Pre=$item->audio->format->mp3; }
-					$item_AudioURL=$item_AudioURL_Pre; 
-					//$item_AudioURL=$item->audio->format->mp3; 
-					if ($item_AudioURL!=''){
-						if($MainVar['program_id']==3 && $item->storyDate!=''){$pubDatePre=new DateTime($item->storyDate); }else{$pubDatePre=new DateTime($item->show->showDate); }
-						$segNum=$item->show->segNum; /* $pubDatePre=new DateTime($item->show->showDate); */ $pubDatePre->modify("+{$segNum} minutes"); $pubDate=$pubDatePre->format('r'); 
-						$Channelitem=$channelMain->addChild('item'); 
-						$Channelitem->addChild('title'); $Channelitem->title=$item->title; 
-						$Channelitem->addChild('description'); $Channelitem->description=$item->teaser; 
-						$Channelitem->addChild('link'); $Channelitem->link=$item->link[0]; 
-						$Channelitem->addChild('guid'); //$Channelitem->guid=$item->attributes()->id; 
-							if($MainVar['program_id']==3){$itemGUID=$item->attributes()->id.'-ME'; }else{$itemGUID=$item->attributes()->id; }
-							$Channelitem->guid=$itemGUID; 
-						$Channelitem->addChild('itunesZXZXsubtitle'); $Channelitem->itunesZXZXsubtitle=''; 
-						$Channelitem->addChild('itunesZXZXsummary'); $Channelitem->itunesZXZXsummary=$item->teaser; 
-						$Channelitem->addChild('itunesZXZXexplicit'); $Channelitem->itunesZXZXexplicit='no';
-						$ChannelitemEnclos=$Channelitem->addChild('enclosure'); 
-						$ChannelitemEnclos->addAttribute('url',$item_AudioURL); 
-						$ChannelitemEnclos->addAttribute('type','audio/mpeg'); 
-						$Channelitem->addChild('itunesZXZXduration'); $Channelitem->itunesZXZXduration=$item->audio->duration;  
-						$Channelitem->addChild('pubDate'); $Channelitem->pubDate=$pubDate; 
-						$Channelitem->addChild('lastModifiedDate'); $Channelitem->lastModifiedDate=$pubDate; 
-						$Channelitem->addChild('itunesZXZXauthor'); $Channelitem->itunesZXZXauthor=$item->byline->name; 
+					if($item->show->program['id']==$MainVar['program_id']){
+						if($MainVar['program_id']==3){$item_AudioURL_Pre=preg_replace('/(.*)\?.*/','$1',$item->audio->format->mp3); }else{$item_AudioURL_Pre=$item->audio->format->mp3; }
+						$item_AudioURL=$item_AudioURL_Pre; 
+						//$item_AudioURL=$item->audio->format->mp3; 
+						if ($item_AudioURL!=''){
+							$pubDatePre=new DateTime($item->show->showDate); 
+							//if($MainVar['program_id']==3 && $item->storyDate!=''){$pubDatePre=new DateTime($item->storyDate); }
+							$segNum=$item->show->segNum; /* $pubDatePre=new DateTime($item->show->showDate); */ $pubDatePre->modify("+{$segNum} minutes"); $pubDate=$pubDatePre->format('r'); 
+							$Channelitem=$channelMain->addChild('item'); 
+							$Channelitem->addChild('title'); $Channelitem->title=$item->title; 
+							$Channelitem->addChild('description'); $Channelitem->description=$item->teaser; 
+							$Channelitem->addChild('link'); $Channelitem->link=$item->link[0]; 
+							$Channelitem->addChild('guid'); //$Channelitem->guid=$item->attributes()->id; 
+								if($MainVar['program_id']==3){$itemGUID=$item->attributes()->id.'-ME'; }else{$itemGUID=$item->attributes()->id; }
+								$Channelitem->guid=$itemGUID; 
+							$Channelitem->addChild('itunesZXZXsubtitle'); $Channelitem->itunesZXZXsubtitle=''; 
+							$Channelitem->addChild('itunesZXZXsummary'); $Channelitem->itunesZXZXsummary=$item->teaser; 
+							$Channelitem->addChild('itunesZXZXexplicit'); $Channelitem->itunesZXZXexplicit='no';
+							$ChannelitemEnclos=$Channelitem->addChild('enclosure'); 
+							$ChannelitemEnclos->addAttribute('url',$item_AudioURL); 
+							$ChannelitemEnclos->addAttribute('type','audio/mpeg'); 
+							$Channelitem->addChild('itunesZXZXduration'); $Channelitem->itunesZXZXduration=$item->audio->duration;  
+							$Channelitem->addChild('pubDate'); $Channelitem->pubDate=$pubDate; 
+							$Channelitem->addChild('lastModifiedDate'); $Channelitem->lastModifiedDate=$pubDate; 
+							$Channelitem->addChild('itunesZXZXauthor'); $Channelitem->itunesZXZXauthor=$item->byline->name; 
+							}
 						}
-			
 					}
 		$xmlClean = new DOMDocument(); // seems like a huge memory cost (4184 bytes), just to make it 'pretty'; used DOMDoc: http://php.net/manual/en/class.domdocument.php
 		$xmlClean->loadXML($xml->asXML()); 
